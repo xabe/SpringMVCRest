@@ -1,4 +1,4 @@
-Ejemeplo de Spring MVC 
+Ejemplo de Spring MVC 
 =============
 
 Aqui teneis un ejemplo de usar spring mvc como servio rest
