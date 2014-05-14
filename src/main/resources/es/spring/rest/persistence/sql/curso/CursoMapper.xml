@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="es.spring.rest.persistence.curso.CursoMapper" >
+ 
+  <resultMap id="BaseResultMap" type="es.spring.rest.model.curso.Curso" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="titulo" property="titulo" jdbcType="VARCHAR" />
+    <result column="nivel" property="nivel" jdbcType="VARCHAR" />   
+    <result column="horas" property="horas" jdbcType="INTEGER" />
+    <result column="activo" property="activo" jdbcType="BOOLEAN" />
+    <result column="profesor" property="profesor" jdbcType="INTEGER" />
+	<result column="documento" property="documento" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  
+  <sql id="Base_Column_List" >
+    id, titulo, nivel, horas,activo,profesor,documento
+  </sql>
+  
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="es.spring.rest.model.curso.CursoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_curso
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from t_curso
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_curso
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <delete id="deleteByExample" parameterType="es.spring.rest.model.curso.CursoExample" >
+    delete from t_curso
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  
+  <insert id="insert" parameterType="es.spring.rest.model.curso.Curso" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_curso (titulo,nivel,horas,activo,profesor,documento
+      )
+    values (
+    	#{titulo,jdbcType=VARCHAR},
+    	#{nivel,jdbcType=VARCHAR}, 
+    	#{horas,jdbcType=INTEGER},
+    	#{activo,jdbcType=BOOLEAN},
+    	#{profesor,jdbcType=VARCHAR},
+    	#{documento,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  
+  <insert id="insertSelective" parameterType="es.spring.rest.model.curso.Curso" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into t_curso
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="titulo != null" >
+        titulo,
+      </if>
+      <if test="nivel != null" >
+        nivel,
+      </if>
+      <if test="horas != null" >
+        horas,
+      </if>
+      <if test="activo != null" >
+        activo,
+      </if>
+      <if test="profesor != null" >
+        profesor,
+      </if>
+      <if test="documento != null" >
+        documento,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      	<if test="titulo != null" >
+     	 	#{titulo,jdbcType=VARCHAR},
+      	</if>
+      	<if test="nivel != null" >
+    		#{nivel,jdbcType=VARCHAR}, 
+    	</if>
+    	<if test="horas != null" >
+    		#{horas,jdbcType=INTEGER},
+    	</if>
+    	<if test="activo != null" >
+    		#{activo,jdbcType=BOOLEAN},
+    	</if>
+    	<if test="profesor != null" >
+    		#{profesor,jdbcType=VARCHAR},
+    	</if>
+    	<if test="documento != null" >
+    		#{documento,jdbcType=VARCHAR},
+    	</if>
+    </trim>
+  </insert>
+  
+  <select id="countByExample" parameterType="es.spring.rest.model.curso.CursoExample" resultType="java.lang.Integer" >
+    select count(*) from t_curso
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_curso
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>      
+      <if test="record.titulo != null" >
+     	 titulo = #{record.titulo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nivel != null" >
+    	nivel =	#{record.nivel,jdbcType=VARCHAR}, 
+     </if>
+     <if test="record.horas != null" >
+    	horas = #{record.horas,jdbcType=INTEGER},
+     </if>
+    	<if test="record.activo != null" >
+    	activo = #{record.activo,jdbcType=BOOLEAN},
+    	</if>
+    	<if test="record.profesor != null" >
+    	profesor =	#{record.profesor,jdbcType=VARCHAR},
+    	</if>
+    	<if test="record.documento != null" >
+    	documento =	#{record.documento,jdbcType=VARCHAR},
+    	</if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  
+  <update id="updateByExample" parameterType="map" >
+    update t_curso
+    set id = #{record.id,jdbcType=INTEGER},
+      	titulo = #{titulo,jdbcType=VARCHAR},
+    	nivel =	#{nivel,jdbcType=VARCHAR}, 
+    	horas = #{horas,jdbcType=INTEGER},
+    	activo = #{activo,jdbcType=BOOLEAN},
+    	profesor =	#{profesor,jdbcType=VARCHAR},
+    	documento =	#{documento,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="es.spring.rest.model.curso.Curso" >
+    update t_curso
+    <set >
+      	<if test="titulo != null" >
+     	 titulo = #{titulo,jdbcType=VARCHAR},
+      	</if>
+      	<if test="nivel != null" >
+    	nivel =	#{nivel,jdbcType=VARCHAR}, 
+    	</if>
+    	<if test="horas != null" >
+    	horas = #{horas,jdbcType=INTEGER},
+    	</if>
+    	<if test="activo != null" >
+    	activo = #{activo,jdbcType=BOOLEAN},
+    	</if>
+    	<if test="profesor != null" >
+    	profesor =	#{profesor,jdbcType=VARCHAR},
+    	</if>
+    	<if test="documento != null" >
+    	documento =	#{documento,jdbcType=VARCHAR},
+    	</if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="es.spring.rest.model.curso.Curso" >
+    update t_curso
+    set 
+       	titulo = #{titulo,jdbcType=VARCHAR},
+    	nivel =	#{nivel,jdbcType=VARCHAR}, 
+    	horas = #{horas,jdbcType=INTEGER},
+    	activo = #{activo,jdbcType=BOOLEAN},
+    	profesor =	#{profesor,jdbcType=VARCHAR},
+    	documento =	#{documento,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    
+  <delete id="deleteAllData" parameterType="es.spring.rest.model.curso.CursoExample">
+      TRUNCATE TABLE t_curso
+  </delete>
+  
+	<select resultMap="BaseResultMap" parameterType="es.spring.rest.model.curso.CursoExample" id="selectByExamplePagination" >
+	    select
+	    <if test="distinct" >
+	      distinct
+	    </if>
+	    <include refid="Base_Column_List" />
+	    from t_curso
+	    <if test="_parameter != null" >
+	      <include refid="Example_Where_Clause" />
+	    </if>
+	    <if test="orderByClause != null" >
+	      order by ${orderByClause}
+	    </if>
+	    <if test="limit != null" >
+	        limit ${limit}
+	    </if>
+	    <if test="offset != null" >
+	        offset ${offset}
+	    </if>
+	</select>
+       
+
+      
+</mapper>
