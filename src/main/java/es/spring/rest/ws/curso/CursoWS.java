@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.spring.rest.model.curso.Curso;
 import es.spring.rest.model.curso.CursoExample;
@@ -70,13 +71,13 @@ public class CursoWS {
 	/**-------------------------------------------------------------------------Metodos POST----------------------------------------------------------------------------------**/
 
 	@RequestMapping(value = "/curso", method = RequestMethod.POST,  consumes = "application/json", produces = "application/json")
-	@ResponseStatus(value = HttpStatus.OK)
+	@ResponseStatus(value = HttpStatus.CREATED)
 	public void addCurso(@RequestBody Curso curso) {
 		service.add(curso);
 	}
 	
 	@RequestMapping(value = "/curso/temario", method = RequestMethod.POST, produces = "application/json")
-	@ResponseStatus(value = HttpStatus.OK)
+	@ResponseStatus(value = HttpStatus.CREATED)
 	public ResponseEntity<?> addCurso(MultipartHttpServletRequest request) {
 		Iterator<String> itr = request.getFileNames();
 	
@@ -93,7 +94,7 @@ public class CursoWS {
 	    	Curso curso = mapper.readValue(request.getParameter("model"), Curso.class);
 	    	curso.setDocumento(nombreFichero);
 	    	service.add(curso);
-	    	return new ResponseEntity<Object>(HttpStatus.OK);
+	    	return new ResponseEntity<Object>(HttpStatus.CREATED);
 	    } catch (IOException e) {
 	       return new ResponseEntity<String>("Error al crear el curso", HttpStatus.EXPECTATION_FAILED);
 	    }

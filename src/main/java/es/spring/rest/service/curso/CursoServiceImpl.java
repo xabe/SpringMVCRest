@@ -22,30 +22,30 @@ public class CursoServiceImpl implements CursoService {
 
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public void add(Curso aCurso) {
-		mapper.insert(aCurso);
+	public int add(Curso aCurso) {
+		return mapper.insert(aCurso);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public void update(Curso aCurso) {
-		mapper.updateByPrimaryKey(aCurso);
+	public int update(Curso aCurso) {
+		return mapper.updateByPrimaryKey(aCurso);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public void update(Curso aCurso, CursoExample aCursoExample) {
-		mapper.updateByExample(aCurso, aCursoExample);
+	public int update(Curso aCurso, CursoExample aCursoExample) {
+		return mapper.updateByExample(aCurso, aCursoExample);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public void delete(Curso aCurso) {
+	public int delete(Curso aCurso) {
 		CursoExample aCursoExample = new CursoExample();
 		aCursoExample.createCriteria().andIdEqualTo(aCurso.getId());
-		mapper.deleteByExample(aCursoExample);
+		return mapper.deleteByExample(aCursoExample);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public void delete(CursoExample aCursoExample) {
-		mapper.deleteByExample(aCursoExample);
+	public int delete(CursoExample aCursoExample) {
+		return mapper.deleteByExample(aCursoExample);
 	}
 
 	public List<Curso> getAll() {

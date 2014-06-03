@@ -17,15 +17,15 @@ public interface ServiceBase<T extends EntityBase, D extends ExampleBase> {
 	public static final String PREVIOUS = "previous";
 	public static final String LAST = "last";
 
-	void add(T t);
+	int add(T t);
 
-	void update(T t);
+	int update(T t);
 
-	void update(T t, D d);
+	int update(T t, D d);
 
-	void delete(T t);
+	int delete(T t);
 
-	void delete(D d);
+	int delete(D d);
 
 	List<T> getAll();
 
