@@ -18,6 +18,7 @@
 	<context:annotation-config></context:annotation-config>
 	<context:component-scan base-package="es.spring.rest" />
 	<mvc:annotation-driven content-negotiation-manager="contentManager"  />
+	<bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
 	
 	<bean id="contentManager"
 		class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">

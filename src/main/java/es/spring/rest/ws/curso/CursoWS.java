@@ -20,6 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 import es.spring.rest.model.curso.Curso;
 import es.spring.rest.model.curso.CursoExample;
@@ -30,6 +33,7 @@ import es.spring.rest.util.FileUtil;
 
 @Controller
 @RequestMapping(value = "/cursos")
+@Api(value="", description="Operaciones de Cursos")
 public class CursoWS {
 
 	@Autowired
@@ -40,10 +44,12 @@ public class CursoWS {
 	@RequestMapping(value = "/pagination", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.OK)
-	public List<Curso> getCursosPagination(@RequestParam(value = "first", 		defaultValue = "0") Integer first, 
-										@RequestParam(value = "pageSize", 	defaultValue = "10") Integer pageSize,
-										@RequestParam(value = "sortField",	defaultValue = "id" ) String  sortField,
-										@RequestParam(value = "sortOrder", 	defaultValue = "ASC") String sortOrder) {
+	@ApiOperation(value="Operacion para paginar el resultado")
+	public List<Curso> getCursosPagination(
+										@ApiParam(name="frist", value="Posición del primer registro del paginado", defaultValue = "0") @RequestParam(value = "first", 		defaultValue = "0") Integer first, 
+										@ApiParam(name="pageSize", value="Tamaño de la pagina", defaultValue = "10") @RequestParam(value = "pageSize", 	defaultValue = "10") Integer pageSize,
+										@ApiParam(name="sortField", value="Campo que sea ordenado el resultado de la busqueda", defaultValue = "id") @RequestParam(value = "sortField",	defaultValue = "id" ) String  sortField,
+										@ApiParam(name="sortOrder", value="Ordenado el campo anterior Ascdente o descendente", defaultValue = "ASC") @RequestParam(value = "sortOrder", 	defaultValue = "ASC") String sortOrder) {
 		
 		CursoExample example = new CursoExample();
 		example.createCriteria().andActivoEqualTo(true);

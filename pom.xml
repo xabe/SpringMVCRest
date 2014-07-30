@@ -355,6 +355,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Api Documentacion -->
+
+		<dependency>
+			<groupId>com.mangofactory</groupId>
+			<artifactId>swagger-springmvc</artifactId>
+			<version>0.8.5</version>
+		</dependency>
 
 	</dependencies>
 
