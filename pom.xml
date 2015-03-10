@@ -3,14 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>xabe</groupId>
 	<artifactId>SpringMVCRest</artifactId>
-	<version>1.0</version>
+	<version>1.3</version>
 	<packaging>war</packaging>
 
 
 	<name>SpringMVCRest</name>
 
 	<properties>
-		<java.version>1.6</java.version>
+		<java.version>1.7</java.version>
 		<servlet.version>2.5</servlet.version>
 		<jstl.version>1.2</jstl.version>
 		<org.springframework.version>3.2.5.RELEASE</org.springframework.version>
@@ -18,12 +18,17 @@
 		<mybatis.version>3.2.3</mybatis.version>
 		<jackson.version>2.4.0</jackson.version>
 		<org.slf4j.version>1.7.6</org.slf4j.version>
+		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.11</junit.version>
 		<jsonpath.version>0.8.1</jsonpath.version>
 		<hamcrest.version>1.3</hamcrest.version>
 		<mockito.version>1.9.5</mockito.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
+
+		<jacoco.version>0.7.4.201502262128</jacoco.version>
+		<sonar.jacoco.itreportpath>${project.build.directory}/jacoco-it.exec</sonar.jacoco.itreportpath>
+		<sonar.jacoco.utreportpath>${project.build.directory}/jacoco.exec</sonar.jacoco.utreportpath>
 	</properties>
 
 	<build>
@@ -41,42 +46,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>maven-jetty-plugin</artifactId>
-				<version>6.1.10</version>
-				<configuration>
-					<scanIntervalSeconds>10</scanIntervalSeconds>
-					<stopKey>foo</stopKey>
-					<stopPort>9999</stopPort>
-					<connectors>
-						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-							<port>9080</port>
-							<maxIdleTime>60000</maxIdleTime>
-						</connector>
-					</connectors>
-				</configuration>
-				<executions>
-					<execution>
-						<id>start-jetty</id>
-						<phase>process-test-classes</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<scanIntervalSeconds>0</scanIntervalSeconds>
-							<daemon>true</daemon>
-						</configuration>
-					</execution>
-					<execution>
-						<id>stop-jetty</id>
-						<phase>test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.4</version>
@@ -89,6 +58,160 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>Sonar</id>
+			<properties>
+				<sonar.jdbc.url>jdbc:h2:tcp://localhost:9092/sonar</sonar.jdbc.url>
+				<sonar.jdbc.driver>org.h2.Driver</sonar.jdbc.driver>
+				<sonar.jdbc.username>sonar</sonar.jdbc.username>
+				<sonar.jdbc.password>sonar</sonar.jdbc.password>
+				<sonar.host.url>http://localhost:9000</sonar.host.url>
+				<sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+			</properties>
+		</profile>
+		<profile>
+			<id>Test</id>
+			<properties>
+				<skip.unit.tests>false</skip.unit.tests>
+				<skip.integration.tests>false</skip.integration.tests>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco.version}</version>
+						<executions>
+							<execution>
+								<id>pre-unit-test</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+								<configuration>
+									<propertyName>surefireArgLine</propertyName>
+									<destFile>${sonar.jacoco.utReportPath}</destFile>
+									<includes>
+										<include>es/spring/rest/**</include>
+									</includes>
+									<excludes>
+										<exclude>es/spring/test/**/*Test</exclude>
+										<exclude>es/spring/test/**/*IT</exclude>
+									</excludes>
+									<append>true</append>
+								</configuration>
+							</execution>
+							<execution>
+								<id>generate-unit-test-report</id>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>pre-integration-test</id>
+								<goals>
+									<goal>prepare-agent-integration</goal>
+								</goals>
+								<configuration>
+									<propertyName>failsafeArgLine</propertyName>
+									<destFile>${sonar.jacoco.itReportPath}</destFile>
+									<includes>
+										<include>es/spring/rest/**</include>
+									</includes>
+									<excludes>
+										<exclude>es/spring/test/**/*Test</exclude>
+										<exclude>es/spring/test/**/*IT</exclude>
+									</excludes>
+									<append>true</append>
+								</configuration>
+							</execution>
+							<execution>
+								<id>generate-integration-test-report</id>
+								<goals>
+									<goal>report-integration</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.18.1</version>
+						<configuration>
+							<argLine>${surefireArgLine}</argLine>
+							<skipTests>${skip.unit.tests}</skipTests>
+							<excludes>
+								<exclude>**/*IT.java</exclude>
+							</excludes>
+							<properties>
+								<property>
+									<name>listener</name>
+									<value>org.sonar.java.jacoco.JUnitListener</value>
+								</property>
+							</properties>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-maven-plugin</artifactId>
+						<version>9.2.1.v20140609</version>
+						<configuration>
+							<stopKey>foo</stopKey>
+							<stopPort>9999</stopPort>
+							<war>${project.build.directory}/{project.build.finalName}.war</war>
+						</configuration>
+						<executions>
+							<execution>
+								<id>start-jetty</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>run-forked</goal>
+								</goals>
+								<configuration>
+									<waitForChild>false</waitForChild>
+									<jvmArgs>${failsafeArgLine}</jvmArgs>
+								</configuration>
+							</execution>
+							<execution>
+								<id>stop-jetty</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>2.18.1</version>
+						<configuration>
+							<encoding>${project.build.sourceEncoding}</encoding>
+							<argLine>${failsafeArgLine}</argLine>
+							<skipITs>${skip.integration.tests}</skipITs>
+							<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+							<properties>
+								<property>
+									<name>listener</name>
+									<value>org.sonar.java.jacoco.JUnitListener</value>
+								</property>
+							</properties>
+						</configuration>
+						<executions>
+							<execution>
+								<id>integration-tests</id>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<dependencyManagement>
 		<dependencies>
@@ -168,6 +291,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>${org.springframework.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -271,18 +400,6 @@
 		<!-- LOG -->
 
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${org.slf4j.version}</version>
@@ -290,13 +407,7 @@
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>log4j-over-slf4j</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
+			<artifactId>jcl-over-slf4j</artifactId>
 			<version>${org.slf4j.version}</version>
 		</dependency>
 
@@ -304,6 +415,20 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${org.slf4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+
+		<!-- Api Documentacion -->
+
+		<dependency>
+			<groupId>com.mangofactory</groupId>
+			<artifactId>swagger-springmvc</artifactId>
+			<version>0.8.5</version>
 		</dependency>
 
 		<!-- Test -->
@@ -355,12 +480,18 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Api Documentacion -->
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.core</artifactId>
+			<scope>test</scope>
+			<version>${jacoco.version}</version>
+		</dependency>
 
 		<dependency>
-			<groupId>com.mangofactory</groupId>
-			<artifactId>swagger-springmvc</artifactId>
-			<version>0.8.5</version>
+			<groupId>org.codehaus.sonar-plugins.java</groupId>
+			<artifactId>sonar-jacoco-listeners</artifactId>
+			<version>2.4</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

@@ -72,6 +72,16 @@ public class CursoWS {
 		return service.getAll(example);
 	}
 	
+	@RequestMapping(value = "/curso/{id}", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	@ResponseStatus(value = HttpStatus.OK)
+	public List<Curso> getCurso(@PathVariable("id") Integer id) {		
+		CursoExample example = new CursoExample();
+		example.createCriteria().andActivoEqualTo(true).andIdEqualTo(id);
+		return service.getAll(example);
+	}
+	
+	
 	/**-------------------------------------------------------------------------Metodos GET----------------------------------------------------------------------------------**/
 	
 	/**-------------------------------------------------------------------------Metodos POST----------------------------------------------------------------------------------**/
