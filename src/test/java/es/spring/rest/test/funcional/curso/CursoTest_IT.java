@@ -24,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import es.spring.rest.model.curso.Curso;
 
 
-public class CursoIT {
+public class CursoTest_IT {
 	private static final String BASE_URI = "http://localhost:8080/rest/cursos/";
 	private RestTemplate restTemplate = new RestTemplate();
 	
