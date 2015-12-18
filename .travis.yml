@@ -3,3 +3,6 @@ sudo: false
 
 jdk:
   - oraclejdk7
+
+after_success:
+  - mvn clean verify coveralls:report -q
