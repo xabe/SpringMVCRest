@@ -1,4 +1,8 @@
-[![Build Status](https://drone.io/github.com/xabe/SpringMVCRest/status.png)](https://drone.io/github.com/xabe/SpringMVCRest/latest)
+
+
+[![Build Status](https://travis-ci.org/xabe/SpringMVCRest.svg?branch=master)](https://travis-ci.org/xabe/SpringMVCRest)
+[![Coverage Status](https://coveralls.io/repos/xabe/SpringMVCRest/badge.svg?branch=master&service=github)](https://coveralls.io/github/xabe/SpringMVCRest?branch=master)
+
 
 Ejemplo de Spring MVC 
 =============
